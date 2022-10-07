@@ -39,7 +39,7 @@ fn main() {
         aes128_enc::aes128_enc(&mut lambda_set[i], key, 3, true);
     }
 
-    // Xor the 256 sets in the fisrt set
+    // Xor the 256 sets in the first set
     for i in 0..256 {
         for j in 0..16 {
             lambda_set[0][j] ^= lambda_set[i][j];
