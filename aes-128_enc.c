@@ -6,6 +6,7 @@
  */
 
 #include "aes-128_enc.h"
+#include "stdio.h"
 
 /*
  * Constant-time ``broadcast-based'' multiplication by $a$ in $F_2[X]/X^8 + X^4 + X^3 + X + 1$
@@ -130,22 +131,89 @@ void aes128_enc(uint8_t block[AES_BLOCK_SIZE], const uint8_t key[AES_128_KEY_SIZ
 {
 	uint8_t ekey[32];
 	int i, pk, nk;
+	printf("___________________________\n");
+	printf("Block = ");
+	for (int i = 0; i < 16; i++) {
+		printf("%d,", block[i]);
+	}
+	printf("\n");
 
 	for (i = 0; i < 16; i++)
 	{
 		block[i] ^= key[i];
 		ekey[i]   = key[i];
 	}
+
+	
+	for (int i = 0; i < 16; i++) {
+		printf("%d,", ekey[i]);
+	}
+	printf(" | ");
+	for (int i = 0; i < 16; i++) {
+		printf("%d,", ekey[i + 16]);
+	}
+	printf(" | ");
+	for (int i = 0; i < 16; i++) {
+		printf("%d,", block[i]);
+	}
+	printf("\n");
+
 	next_aes128_round_key(ekey, ekey + 16, 0);
+
+	for (int i = 0; i < 16; i++) {
+		printf("%d,", ekey[i]);
+	}
+	printf(" | ");
+	for (int i = 0; i < 16; i++) {
+		printf("%d,", ekey[i + 16]);
+	}
+	printf(" | ");
+	for (int i = 0; i < 16; i++) {
+		printf("%d,", block[i]);
+	}
+
+
+	printf("\n");
 
 	pk = 0;
 	nk = 16;
 	for (i = 1; i < nrounds; i++)
 	{
 		aes_round(block, ekey + nk, 0);
+		for (int i = 0; i < 16; i++) {
+			printf("%d,", ekey[i]);
+		}
+		printf(" | ");
+		for (int i = 0; i < 16; i++) {
+			printf("%d,", ekey[i + 16]);
+		}
+		printf(" | ");
+		for (int i = 0; i < 16; i++) {
+			printf("%d,", block[i]);
+		}
+
+		printf("\n");
+
 		pk = (pk + 16) & 0x10;
 		nk = (nk + 16) & 0x10;
+		/*printf("%i\n", pk);*/
+		/*printf("%i\n", nk);*/
 		next_aes128_round_key(ekey + pk, ekey + nk, i);
+		for (int i = 0; i < 16; i++) {
+			printf("%d,", ekey[i]);
+		}
+		printf(" | ");
+		for (int i = 0; i < 16; i++) {
+			printf("%d,", ekey[i + 16]);
+		}
+		printf(" | ");
+		for (int i = 0; i < 16; i++) {
+			printf("%d,", block[i]);
+		}
+
+		printf("\n");
+
+
 	}
 	if (lastfull)
 	{
@@ -155,37 +223,18 @@ void aes128_enc(uint8_t block[AES_BLOCK_SIZE], const uint8_t key[AES_128_KEY_SIZ
 	{
 		aes_round(block, ekey + nk, 16);
 	}
-}
-
-
-void aes128_decr(uint8_t block[AES_BLOCK_SIZE], const uint8_t key[AES_128_KEY_SIZE], unsigned nrounds, int lastfull) {
-	uint8_t ekey[32];
-	int i, pk, nk;
-
-	for (i = 0; i < 16; i++)
-	{
-		block[i] ^= key[i];
-		ekey[i]   = key[i];
+	for (int i = 0; i < 16; i++) {
+		printf("%d,", ekey[i]);
+	}
+	printf(" | ");
+	for (int i = 0; i < 16; i++) {
+		printf("%d,", ekey[i + 16]);
+	}
+	printf(" | ");
+	for (int i = 0; i < 16; i++) {
+		printf("%d,", block[i]);
 	}
 
-	if (lastfull) {
-		aes_round(block, ekey + nk, 0);
-	}
-	else
-	{
-		aes_round(block, ekey + nk, 16);
-	}
+	printf("\n");
 
-	for (i = nrounds - 1; i >= 1; i--)
-	{
-		aes_round(block, ekey + nk, 0);
-		pk = (pk + 16) & 0x10;
-		nk = (nk + 16) & 0x10;
-		prev_aes128_round_key(ekey + pk, ekey + nk, i);
-	}
-
-	prev_aes128_round_key(ekey, ekey + 16, 0);
-
-	pk = 0;
-	nk = 16;
 }

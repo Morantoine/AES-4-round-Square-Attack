@@ -9,7 +9,7 @@ int main() {
 
 	// 256 lambda_sets of size 16
 	uint8_t lambda_set[256][16] = {0};
-	for (int num_set = 0; num_set < 256; num_set++) {
+	for (uint16_t num_set = 0; num_set < 256; num_set++) {
 		lambda_set[num_set][0] = num_set;
 	}
 

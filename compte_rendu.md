@@ -58,17 +58,17 @@ On teste avec la clé : `000102030405060708090a0b0c0d0e0f`
 
 	// 256 lambda_sets of size 16
 	uint8_t lambda_set[256][16] = {0};
-	for (int num_set = 0; num_set < 256; num_set++) {
+	for (uint16_t num_set = 0; num_set < 256; num_set++) {
 		lambda_set[num_set][0] = num_set;
 	}
 
 	// Encrypt the 256 sets
-	for (uint8_t i = 0; i < 256; i++) {
+	for (uint16_t i = 0; i < 256; i++) {
 		aes128_enc(lambda_set[i], key, 3, true);
 	}
 
 	// Xor the 256 sets in the fisrt set
-	for (uint8_t i = 1; i < 256; i++) {
+	for (uint16_t i = 1; i < 256; i++) {
 		for (uint9_t j = 0; j < 16; j++) {
 			lambda_set[0][j] ^= lambda_set[i][j];
 		}
