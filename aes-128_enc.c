@@ -6,6 +6,7 @@
  */
 
 #include "aes-128_enc.h"
+#include "stdio.h"
 
 /*
  * Constant-time ``broadcast-based'' multiplication by $a$ in $F_2[X]/X^8 + X^4 + X^3 + X + 1$
@@ -145,6 +146,8 @@ void aes128_enc(uint8_t block[AES_BLOCK_SIZE], const uint8_t key[AES_128_KEY_SIZ
 		aes_round(block, ekey + nk, 0);
 		pk = (pk + 16) & 0x10;
 		nk = (nk + 16) & 0x10;
+        printf("%i\n", pk);
+        printf("%i\n", nk);
 		next_aes128_round_key(ekey + pk, ekey + nk, i);
 	}
 	if (lastfull)
@@ -155,37 +158,4 @@ void aes128_enc(uint8_t block[AES_BLOCK_SIZE], const uint8_t key[AES_128_KEY_SIZ
 	{
 		aes_round(block, ekey + nk, 16);
 	}
-}
-
-
-void aes128_decr(uint8_t block[AES_BLOCK_SIZE], const uint8_t key[AES_128_KEY_SIZE], unsigned nrounds, int lastfull) {
-	uint8_t ekey[32];
-	int i, pk, nk;
-
-	for (i = 0; i < 16; i++)
-	{
-		block[i] ^= key[i];
-		ekey[i]   = key[i];
-	}
-
-	if (lastfull) {
-		aes_round(block, ekey + nk, 0);
-	}
-	else
-	{
-		aes_round(block, ekey + nk, 16);
-	}
-
-	for (i = nrounds - 1; i >= 1; i--)
-	{
-		aes_round(block, ekey + nk, 0);
-		pk = (pk + 16) & 0x10;
-		nk = (nk + 16) & 0x10;
-		prev_aes128_round_key(ekey + pk, ekey + nk, i);
-	}
-
-	prev_aes128_round_key(ekey, ekey + 16, 0);
-
-	pk = 0;
-	nk = 16;
 }
