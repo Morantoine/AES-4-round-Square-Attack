@@ -127,93 +127,26 @@ void prev_aes128_round_key(const uint8_t next_key[16], uint8_t prev_key[16], int
  * Encrypt @block with @key over @nrounds. If @lastfull is true, the last round includes MixColumn, otherwise it doesn't.
  * @nrounds <= 10
  */
-void aes128_enc(uint8_t block[AES_BLOCK_SIZE], const uint8_t key[AES_128_KEY_SIZE], unsigned nrounds, int lastfull)
+void res128_enc(uint8_t block[AES_BLOCK_SIZE], const uint8_t key[AES_128_KEY_SIZE], unsigned nrounds, int lastfull)
 {
 	uint8_t ekey[32];
 	int i, pk, nk;
-	printf("___________________________\n");
-	printf("Block = ");
-	for (int i = 0; i < 16; i++) {
-		printf("%d,", block[i]);
-	}
-	printf("\n");
-
 	for (i = 0; i < 16; i++)
 	{
 		block[i] ^= key[i];
 		ekey[i]   = key[i];
 	}
-
 	
-	for (int i = 0; i < 16; i++) {
-		printf("%d,", ekey[i]);
-	}
-	printf(" | ");
-	for (int i = 0; i < 16; i++) {
-		printf("%d,", ekey[i + 16]);
-	}
-	printf(" | ");
-	for (int i = 0; i < 16; i++) {
-		printf("%d,", block[i]);
-	}
-	printf("\n");
-
 	next_aes128_round_key(ekey, ekey + 16, 0);
-
-	for (int i = 0; i < 16; i++) {
-		printf("%d,", ekey[i]);
-	}
-	printf(" | ");
-	for (int i = 0; i < 16; i++) {
-		printf("%d,", ekey[i + 16]);
-	}
-	printf(" | ");
-	for (int i = 0; i < 16; i++) {
-		printf("%d,", block[i]);
-	}
-
-
-	printf("\n");
 
 	pk = 0;
 	nk = 16;
 	for (i = 1; i < nrounds; i++)
 	{
 		aes_round(block, ekey + nk, 0);
-		for (int i = 0; i < 16; i++) {
-			printf("%d,", ekey[i]);
-		}
-		printf(" | ");
-		for (int i = 0; i < 16; i++) {
-			printf("%d,", ekey[i + 16]);
-		}
-		printf(" | ");
-		for (int i = 0; i < 16; i++) {
-			printf("%d,", block[i]);
-		}
-
-		printf("\n");
-
 		pk = (pk + 16) & 0x10;
 		nk = (nk + 16) & 0x10;
-		/*printf("%i\n", pk);*/
-		/*printf("%i\n", nk);*/
 		next_aes128_round_key(ekey + pk, ekey + nk, i);
-		for (int i = 0; i < 16; i++) {
-			printf("%d,", ekey[i]);
-		}
-		printf(" | ");
-		for (int i = 0; i < 16; i++) {
-			printf("%d,", ekey[i + 16]);
-		}
-		printf(" | ");
-		for (int i = 0; i < 16; i++) {
-			printf("%d,", block[i]);
-		}
-
-		printf("\n");
-
-
 	}
 	if (lastfull)
 	{
@@ -223,18 +156,5 @@ void aes128_enc(uint8_t block[AES_BLOCK_SIZE], const uint8_t key[AES_128_KEY_SIZ
 	{
 		aes_round(block, ekey + nk, 16);
 	}
-	for (int i = 0; i < 16; i++) {
-		printf("%d,", ekey[i]);
-	}
-	printf(" | ");
-	for (int i = 0; i < 16; i++) {
-		printf("%d,", ekey[i + 16]);
-	}
-	printf(" | ");
-	for (int i = 0; i < 16; i++) {
-		printf("%d,", block[i]);
-	}
-
-	printf("\n");
 
 }
