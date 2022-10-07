@@ -108,54 +108,16 @@ pub fn aes128_enc(
 ) {
     let mut prev_key: [u8; 16] = [0; 16];
     let mut next_key: [u8; 16] = [0; 16];
-    println!("___________________________");
-    print!("Block =");
-    for i in 0..16 {
-        print!("{},", block[i]);
-    }
-    println!(" | ");
-    for i in 0..16 {
-        print!("{},", next_key[i]);
-    }
-    print!(" | ");
-    for i in 0..16 {
-        print!("{},", block[i]);
-    }
-    println!();
 
     for i in 0..16 {
         block[i] ^= key[i];
         prev_key[i] = key[i];
     }
-    for i in 0..16 {
-        print!("{},", prev_key[i]);
-    }
-    print!(" | ");
-    for i in 0..16 {
-        print!("{},", next_key[i]);
-    }
-    print!(" | ");
-    for i in 0..16 {
-        print!("{},", block[i]);
-    }
-    println!();
 
     next_aes128_round_key(&prev_key, &mut next_key, 0);
-    for i in 0..16 {
-        print!("{},", prev_key[i]);
-    }
-    print!(" | ");
-    for i in 0..16 {
-        print!("{},", next_key[i]);
-    }
-    print!(" | ");
-    for i in 0..16 {
-        print!("{},", block[i]);
-    }
-    println!();
 
-    //let mut pk = 0;
-    //let mut nk: usize = 16;
+    let mut pk = 0;
+    let mut nk: usize = 16;
     let mut turn = true;
 
     for i in 1..nrounds {
@@ -164,59 +126,23 @@ pub fn aes128_enc(
         } else {
             aes_round(block, &mut prev_key, 0);
         }
-        for i in 0..16 {
-            print!("{},", prev_key[i]);
-        }
-        print!(" | ");
-        for i in 0..16 {
-            print!("{},", next_key[i]);
-        }
-        print!(" | ");
-        for i in 0..16 {
-            print!("{},", block[i]);
-        }
-        println!();
 
-        //pk = (pk + 16) & 0x10;
-        //nk = (nk + 16) & 0x10;
+        pk = (pk + 16) & 0x10;
+        nk = (nk + 16) & 0x10;
         turn = !turn;
-        if turn {
+        if !turn {
             next_aes128_round_key(&mut next_key, &mut prev_key, i);
         } else {
             next_aes128_round_key(&mut prev_key, &mut next_key, i);
         }
-        for i in 0..16 {
-            print!("{},", prev_key[i]);
-        }
-        print!(" | ");
-        for i in 0..16 {
-            print!("{},", next_key[i]);
-        }
-        print!(" | ");
-        for i in 0..16 {
-            print!("{},", block[i]);
-        }
-        println!();
     }
     if lastfull && turn {
-        aes_round(block, &mut prev_key, 0);
-    } else if lastfull && !turn {
         aes_round(block, &mut next_key, 0);
+    } else if lastfull && !turn {
+        aes_round(block, &mut prev_key, 0);
     } else if turn {
-        aes_round(block, &mut prev_key, 16);
-    } else {
         aes_round(block, &mut next_key, 16);
+    } else {
+        aes_round(block, &mut prev_key, 16);
     }
-    for i in 0..16 {
-        print!("{},", prev_key[i]);
-    }
-    print!(" | ");
-    for i in 0..16 {
-        print!("{},", next_key[i]);
-    }
-    print!(" | ");
-    for i in 0..16 {
-        print!("{},", block[i]);
-    }
-    println!();
 }
