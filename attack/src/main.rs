@@ -1,4 +1,5 @@
 mod aes128_enc;
+mod attack;
 
 fn main() {
     // the key in the documentation: 000102030405060708090a0b0c0d0e0f
@@ -13,15 +14,17 @@ fn main() {
 
     // Encrypt the 256 sets
     for i in 0..256 {
-        aes128_enc::aes128_enc(&mut lambda_set[i], key, 3, true);
+        aes128_enc::aes128_enc(&mut lambda_set[i], key, 4, false);
     }
 
-    // Xor the 256 sets in the first set
-    for i in 1..256 {
-        for j in 0..16 {
-            lambda_set[0][j] ^= lambda_set[i][j];
-        }
-    }
+    //// Xor the 256 sets in the first set
+    //for i in 1..256 {
+    //    for j in 0..16 {
+    //        lambda_set[0][j] ^= lambda_set[i][j];
+    //    }
+    //}
 
-    // print the firt set who have to be full of 0
+    // Test attack
+    attack::check_guess(2, 2, &mut lambda_set);
+
 }
