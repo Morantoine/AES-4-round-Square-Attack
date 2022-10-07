@@ -110,15 +110,15 @@ pub fn aes128_enc(
     let mut next_key: [u8; 16] = [0; 16];
     println!("___________________________");
     print!("Block =");
-    for i in 1..16 {
-        print!("{},", prev_key[i]);
+    for i in 0..16 {
+        print!("{},", block[i]);
     }
-    print!(" | ");
-    for i in 1..16 {
+    println!(" | ");
+    for i in 0..16 {
         print!("{},", next_key[i]);
     }
     print!(" | ");
-    for i in 1..16 {
+    for i in 0..16 {
         print!("{},", block[i]);
     }
     println!();
@@ -127,29 +127,29 @@ pub fn aes128_enc(
         block[i] ^= key[i];
         prev_key[i] = key[i];
     }
-    for i in 1..16 {
+    for i in 0..16 {
         print!("{},", prev_key[i]);
     }
     print!(" | ");
-    for i in 1..16 {
+    for i in 0..16 {
         print!("{},", next_key[i]);
     }
     print!(" | ");
-    for i in 1..16 {
+    for i in 0..16 {
         print!("{},", block[i]);
     }
     println!();
 
     next_aes128_round_key(&prev_key, &mut next_key, 0);
-    for i in 1..16 {
+    for i in 0..16 {
         print!("{},", prev_key[i]);
     }
     print!(" | ");
-    for i in 1..16 {
+    for i in 0..16 {
         print!("{},", next_key[i]);
     }
     print!(" | ");
-    for i in 1..16 {
+    for i in 0..16 {
         print!("{},", block[i]);
     }
     println!();
@@ -164,15 +164,15 @@ pub fn aes128_enc(
         } else {
             aes_round(block, &mut prev_key, 0);
         }
-        for i in 1..16 {
+        for i in 0..16 {
             print!("{},", prev_key[i]);
         }
         print!(" | ");
-        for i in 1..16 {
+        for i in 0..16 {
             print!("{},", next_key[i]);
         }
         print!(" | ");
-        for i in 1..16 {
+        for i in 0..16 {
             print!("{},", block[i]);
         }
         println!();
@@ -185,15 +185,15 @@ pub fn aes128_enc(
         } else {
             next_aes128_round_key(&mut prev_key, &mut next_key, i);
         }
-        for i in 1..16 {
+        for i in 0..16 {
             print!("{},", prev_key[i]);
         }
         print!(" | ");
-        for i in 1..16 {
+        for i in 0..16 {
             print!("{},", next_key[i]);
         }
         print!(" | ");
-        for i in 1..16 {
+        for i in 0..16 {
             print!("{},", block[i]);
         }
         println!();
@@ -207,15 +207,15 @@ pub fn aes128_enc(
     } else {
         aes_round(block, &mut next_key, 16);
     }
-    for i in 1..16 {
+    for i in 0..16 {
         print!("{},", prev_key[i]);
     }
     print!(" | ");
-    for i in 1..16 {
+    for i in 0..16 {
         print!("{},", next_key[i]);
     }
     print!(" | ");
-    for i in 1..16 {
+    for i in 0..16 {
         print!("{},", block[i]);
     }
     println!();
