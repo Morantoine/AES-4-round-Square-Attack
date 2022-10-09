@@ -25,5 +25,5 @@ fn main() {
     //}
 
     // Test attack
-    let key_cracked = attack::attack(&lambda_set);
+    /*let key_cracked = */attack::attack(&lambda_set);
 }

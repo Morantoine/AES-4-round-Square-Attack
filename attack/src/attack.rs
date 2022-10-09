@@ -32,9 +32,9 @@ fn check_key_guess(key_gess: u8, set_of_reversed_bytes: [u8; 256]) -> Option<u8>
 /// Square attack
 pub fn attack(lambda_set: &[[u8; 16]; 256]) -> [u8; 16] {
     let mut key: [u8; 16] = [0; 16];
-    for index_key in 0..16 {
+    for index_key in 0..1 {
         print!("Key[{}] = ", index_key);
-        for n in 0..255 {
+        for n in 0..1 {
             let set_of_reversed_bytes = reverse_state(n, index_key, lambda_set);
             //dbg!(set_of_reversed_bytes);
 
