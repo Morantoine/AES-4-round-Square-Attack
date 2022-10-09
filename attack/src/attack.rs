@@ -1,51 +1,57 @@
+/// Exercice 2: AES 3,5 rounds attack.
+/// Inspired by https://www.davidwong.fr/blockbreakers/square_2_attack4rounds.html
 use crate::aes128_enc::SINV;
 
-pub fn check_guess(guess : u8, pos : usize, lambda_set : &mut [[u8; 16]; 256]) {
-    fn original_byte(guess : u8, pos : usize, block : &mut [u8; 16]) -> u8 {
-    // XOR with the guess, cancelling AddRoundKey
-    block[pos] ^= guess;
-
-    // Invert ShiftRows and SubBytes together
-    let mut tmp : u8;
-    /* Row 0 */
-    block[0] = SINV[block[0] as usize];
-    block[4] = SINV[block[4] as usize];
-    block[8] = SINV[block[8] as usize];
-    block[12] = SINV[block[12] as usize];
-    /* Row 1 */
-    tmp = block[1];
-    block[1] = SINV[block[13] as usize];
-    block[13] = SINV[block[9] as usize];
-    block[9] = SINV[block[5] as usize];
-    block[5] = SINV[tmp as usize];
-    /* Row 2 */
-    tmp = block[10];
-    block[10] = SINV[block[2] as usize];
-    block[2] = SINV[tmp as usize];
-    tmp = block[14];
-    block[14] = SINV[block[6] as usize];
-    block[6] = SINV[tmp as usize];
-    /* Row 3 */
-    tmp = block[15];
-    block[15] = SINV[block[3] as usize];
-    block[3] = SINV[block[7] as usize];
-    block[7] = SINV[block[11] as usize];
-    block[11] = SINV[tmp as usize];
-
-    // Return targeted byte
-    return block[pos];
+/// Reverse the last 1/2 round with a guess at a position pos
+/// Return the byte reversed for all the 256 sets
+fn reverse_state(guess: u8, pos: usize, lambda_set: &[[u8; 16]; 256]) -> [u8; 256] {
+    let mut set_of_reversed_bytes: [u8; 256] = [0; 256];
+    for (index, lambda) in lambda_set.iter().enumerate() {
+        let before_add_round_key = lambda[pos] ^ guess;
+        let before_sub_byte = SINV[before_add_round_key as usize]; // ShiftRows and SubBytes
+        set_of_reversed_bytes[index] = before_sub_byte;
     }
+    set_of_reversed_bytes
+}
 
-    let mut byte_set : Vec<u8> = Vec::new();
-    for lambda in lambda_set {
-        byte_set.push(original_byte(guess, pos, lambda));
+/// If all the reversed bytes at the guessed position of the lambda set xored give 0, then
+/// this is probably the key
+fn check_key_guess(key_gess: u8, set_of_reversed_bytes: [u8; 256]) -> Option<u8> {
+    let mut xored_all_rev_bytes = 0;
+    for rev_byte in set_of_reversed_bytes {
+        xored_all_rev_bytes ^= rev_byte;
     }
-    let result = byte_set.iter().fold(0, | tmp, next | tmp ^ next);
-    if result.count_ones() % 2 == 0 {
-        println!("Found {} as candidate !", guess);
+    //dbg!(xored_all_rev_bytes);
+    if xored_all_rev_bytes == 0 {
+        Some(key_gess)
+    } else {
+        None
     }
-    else {
-        println!("Sorry, {} gave a {} result.", guess, result);
-    }
+}
 
+/// Square attack
+pub fn attack(lambda_set: &[[u8; 16]; 256]) -> [u8; 16] {
+    let mut key: [u8; 16] = [0; 16];
+    for index_key in 0..16 {
+        print!("Key[{}] = ", index_key);
+        for n in 0..255 {
+            let set_of_reversed_bytes = reverse_state(n, index_key, lambda_set);
+            //dbg!(set_of_reversed_bytes);
+
+            match check_key_guess(n, set_of_reversed_bytes) {
+                Some(n) => print!("{}  ", n),
+                None => print!(""),
+            }
+
+            if set_of_reversed_bytes.len() == 1 {
+                // only possibility
+                key[index_key] = set_of_reversed_bytes[0];
+            } else {
+                // need to test the false positives
+                // TODO
+            }
+        }
+        println!();
+    }
+    key
 }

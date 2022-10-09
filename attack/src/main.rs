@@ -25,6 +25,5 @@ fn main() {
     //}
 
     // Test attack
-    attack::check_guess(2, 2, &mut lambda_set);
-
+    let key_cracked = attack::attack(&lambda_set);
 }
