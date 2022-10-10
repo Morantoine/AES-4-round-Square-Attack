@@ -1,7 +1,7 @@
-#include "aes-128_enc.c"
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "aes-128_enc.h"
 
 int main() {
 	// the key in the documentation: 000102030405060708090a0b0c0d0e0f
@@ -15,8 +15,13 @@ int main() {
 
 	// Encrypt the 256 sets
 	for (uint16_t i = 0; i < 256; i++) {
-		aes128_enc(lambda_set[i], key, 3, true);
+		aes128_enc(lambda_set[i], key, 1, false);
 	}
+	printf("[");
+	for (uint16_t j = 0; j < 255; j++) {
+		printf("%u ", lambda_set[j][0]);
+	}
+	printf("]\n");
 
 	// Xor the 256 sets in the fisrt set
 	for (uint16_t i = 1; i < 256; i++) {

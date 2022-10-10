@@ -8,7 +8,8 @@ fn reverse_state(guess: u8, pos: usize, lambda_set: &[[u8; 16]; 256]) -> [u8; 25
     let mut set_of_reversed_bytes: [u8; 256] = [0; 256];
     for (index, lambda) in lambda_set.iter().enumerate() {
         let before_add_round_key = lambda[pos] ^ guess;
-        let before_sub_byte = SINV[before_add_round_key as usize]; // ShiftRows and SubBytes
+        // no need to shift rows
+        let before_sub_byte = SINV[before_add_round_key as usize]; // SubBytes
         set_of_reversed_bytes[index] = before_sub_byte;
     }
     set_of_reversed_bytes
@@ -36,6 +37,7 @@ pub fn attack(lambda_set: &[[u8; 16]; 256]) -> [u8; 16] {
         print!("Key[{}] = ", index_key);
         for n in 0..255 {
             let set_of_reversed_bytes = reverse_state(n, index_key, lambda_set);
+            //dbg!(set_of_reversed_bytes);
             //dbg!(set_of_reversed_bytes);
 
             match check_key_guess(n, set_of_reversed_bytes) {

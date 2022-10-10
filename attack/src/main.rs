@@ -15,7 +15,9 @@ fn main() {
     // Encrypt the 256 sets
     for i in 0..256 {
         aes128_enc::aes128_enc(&mut lambda_set[i], key, 4, false);
+        print!("{} ", lambda_set[i][0]);
     }
+    println!("");
 
     //// Xor the 256 sets in the first set
     //for i in 1..256 {
@@ -25,5 +27,6 @@ fn main() {
     //}
 
     // Test attack
-    /*let key_cracked = */attack::attack(&lambda_set);
+    /*let key_cracked = */
+    attack::attack(&lambda_set);
 }
