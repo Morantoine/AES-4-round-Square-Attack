@@ -1,4 +1,5 @@
-use std::u8;
+//use rand::thread_rng;
+//use rand::seq::SliceRandom;
 
 const RC: [u8; 10] = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36];
 const AES_BLOCK_SIZE: usize = 16;
@@ -41,6 +42,7 @@ pub const SINV: [u8; 256] = [
     0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D,
 ];
 
+
 fn xtime(p: u8) -> u8 {
     let mut m: u8 = p >> 7;
     m ^= 1;
@@ -52,10 +54,16 @@ fn xtime(p: u8) -> u8 {
 fn aes_round(block: &mut [u8; AES_BLOCK_SIZE], round_key: &mut [u8], last_round: u8) {
     let mut tmp: u8;
 
+    //let custom = true;
+    //if custom {
+    //    let mut S_CUST : Vec<u8> =  Vec::from_iter(0..= 255);
+    //    S_CUST.shuffle(&mut thread_rng());
+    //    SBOX.clone_from_slice(& S_CUST);
+    //}
+
     /*
     SubBytes + ShiftRow
     */
-    // Row 0
     /* Row 0 */
     block[0] = SBOX[block[0] as usize];
     block[4] = SBOX[block[4] as usize];
