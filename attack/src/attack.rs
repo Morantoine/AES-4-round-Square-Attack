@@ -53,7 +53,6 @@ pub fn attack(key : [u8; 16]) -> bool {
         cracked_key.push(Vec::new())
     }
     while !cracked_key.iter().all(|v| v.len() == 1) {
-        println!("len = {}", cracked_key[0].len());
         for index_key in 0..16 {
             let mut new_cracked_key: Vec<u8> = vec!();
             print!("\nKey[{}] = ", index_key);
@@ -65,7 +64,7 @@ pub fn attack(key : [u8; 16]) -> bool {
                     new_cracked_key.push(n);
                 }
                 if cracked_key[index_key].is_empty() {
-                    cracked_key[index_key].union(new_cracked_key.clone());
+                    cracked_key[index_key].append(&mut new_cracked_key);
                 } else {
                     cracked_key[index_key].intersect(new_cracked_key.clone());
                 }
