@@ -71,7 +71,7 @@ pub fn attack(key : [u8; 16]) -> bool {
             }
         }
     }
-    dbg!(cracked_key);
+    println!("{:#?}", cracked_key);
     // TODO: faire les prevs
     true
 }
