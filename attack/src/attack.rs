@@ -1,6 +1,8 @@
 /// Exercice 2: AES 3,5 rounds attack.
 /// Inspired by https://www.davidwong.fr/blockbreakers/square_2_attack4rounds.html
 use crate::aes128_enc::{aes128_enc, prev_aes128_round_key, SINV};
+use array_tool::vec::Union;
+use array_tool::vec::Intersection;
 
 /// Reverse the last 1/2 round with a guess at a position pos
 /// Return the byte reversed for all the 256 sets
@@ -31,7 +33,7 @@ fn check_key_guess(key_gess: u8, set_of_reversed_bytes: [u8; 256]) -> Option<u8>
 }
 
 fn generate_lamda_set() -> [[u8; 16]; 256] {
-    let x = rand::random::<u8>();
+    //let x = rand::random::<u8>();
     // the key in the documentation: 000102030405060708090a0b0c0d0e0f
     let key: [u8; 16] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
@@ -69,29 +71,32 @@ return correct_guesses[0]
  */
 
 /// Square attack
-pub fn attack() -> [u8; 16] {
-    let mut key: [u8; 16] = [0; 16];
-    for index_key in 0..16 {
-        print!("Key[{}] = ", index_key);
-        for n in 0..255 {
-            let set_of_reversed_bytes = reverse_state(n, index_key, lambda_set);
-            //dbg!(set_of_reversed_bytes);
-            //dbg!(set_of_reversed_bytes);
+pub fn attack() {
+    let mut cracked_key: Vec<Vec<u8>> = Vec::new();
+    for _ in 0..16 {
+        cracked_key.push(Vec::new())
+    }
+    while !cracked_key.iter().all(|v| v.len() == 1) {
+        let mut new_cracked_key: Vec<u8> = Vec::new();
+        for index_key in 0..16 {
+            print!("Key[{}] = ", index_key);
+            for n in 0..255 {
+                let set_of_reversed_bytes = reverse_state(n, index_key, &generate_lamda_set());
 
-            match check_key_guess(n, set_of_reversed_bytes) {
-                Some(n) => print!("{}  ", n),
-                None => print!(""),
-            }
-
-            if set_of_reversed_bytes.len() == 1 {
-                // only possibility
-                key[index_key] = set_of_reversed_bytes[0];
-            } else {
-                // need to test the false positives
-                // TODO
+                match check_key_guess(n, set_of_reversed_bytes) {
+                    Some(n) => {
+                        print!("{}  ", n);
+                        &new_cracked_key.push(n);
+                    }
+                    None => {}
+                }
+                if cracked_key[index_key].is_empty() {
+                    cracked_key[index_key].union(&new_cracked_key);
+                } else {
+                    cracked_key[index_key].intersection(&new_cracked_key);
+                }
             }
         }
-        println!();
     }
-    key
+    dbg!(cracked_key);
 }
