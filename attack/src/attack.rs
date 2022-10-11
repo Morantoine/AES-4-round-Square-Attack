@@ -2,8 +2,7 @@
 /// Inspired by https://www.davidwong.fr/blockbreakers/square_2_attack4rounds.html
 
 use crate::aes128_enc::{aes128_enc, prev_aes128_round_key, SINV};
-use array_tool::vec::{Union, Intersect};
-use rand::prelude::*;
+use array_tool::vec::{Intersect};
 
 /// Reverse the last 1/2 round with a guess at a position pos
 /// Return the set of bytes reversed for all the 256 sets
@@ -20,7 +19,7 @@ fn reverse_state(guess: u8, pos: usize, lambda_set: &[[u8; 16]; 256]) -> [u8; 25
 
 /// If all the reversed bytes at the guessed position of the lambda set xored give 0, then
 /// this is probably the key
-fn check_key_guess(key_guess: u8, set_of_reversed_bytes: [u8; 256]) -> bool {
+fn check_key_guess(set_of_reversed_bytes: [u8; 256]) -> bool {
     let mut xored_all_rev_bytes = 0;
     for rev_byte in set_of_reversed_bytes {
         xored_all_rev_bytes ^= rev_byte;
@@ -54,24 +53,33 @@ pub fn attack(key : [u8; 16]) -> bool {
     }
     while !cracked_key.iter().all(|v| v.len() == 1) {
         for index_key in 0..16 {
+            // print!("\nKey[{}] = ", index_key);
             let mut new_cracked_key: Vec<u8> = vec!();
-            print!("\nKey[{}] = ", index_key);
             for n in 0..255 {
                 let set_of_reversed_bytes = reverse_state(n, index_key, &generate_lamda_set(key));
 
-                if check_key_guess(n, set_of_reversed_bytes) {
-                    print!("{}  ", n);
+                if check_key_guess(set_of_reversed_bytes) {
+                    // print!("{}  ", n);
                     new_cracked_key.push(n);
                 }
-                if cracked_key[index_key].is_empty() {
-                    cracked_key[index_key].append(&mut new_cracked_key);
-                } else {
-                    cracked_key[index_key].intersect(new_cracked_key.clone());
-                }
+            }
+            if cracked_key[index_key].is_empty() {
+                cracked_key[index_key].append(&mut new_cracked_key);
+            } else {
+                // dbg!(&new_cracked_key);
+                // dbg!(&cracked_key[index_key]);
+                cracked_key[index_key] = cracked_key[index_key].intersect(new_cracked_key.clone());
             }
         }
     }
-    println!("{:#?}", cracked_key);
-    // TODO: faire les prevs
+    // println!("\n\n{:#?}", cracked_key);
+
+    let mut prev_key: [u8; 16] = [0; 16];
+    let mut vec_cracked_key = cracked_key.into_iter().flatten().collect::<Vec<u8>>();
+    prev_aes128_round_key(&vec_cracked_key, &mut prev_key, 3);
+    prev_aes128_round_key(&prev_key, &mut vec_cracked_key, 2);
+    prev_aes128_round_key(&vec_cracked_key, &mut prev_key, 1);
+    prev_aes128_round_key(&prev_key, &mut vec_cracked_key, 0);
+    dbg!(vec_cracked_key);
     true
 }

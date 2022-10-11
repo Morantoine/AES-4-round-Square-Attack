@@ -104,7 +104,7 @@ fn aes_round(block: &mut [u8; AES_BLOCK_SIZE], round_key: &mut [u8], last_round:
     }
 }
 
-fn next_aes128_round_key(prev_key: &[u8], next_key: &mut [u8], round: usize) {
+pub fn next_aes128_round_key(prev_key: &[u8], next_key: &mut [u8], round: usize) {
     next_key[0] = prev_key[0] ^ SBOX[prev_key[13] as usize] ^ RC[round];
     next_key[1] = prev_key[1] ^ SBOX[prev_key[14] as usize];
     next_key[2] = prev_key[2] ^ SBOX[prev_key[15] as usize];
