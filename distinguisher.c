@@ -15,21 +15,21 @@ int main() {
 
 	// Encrypt the 256 sets
 	for (uint16_t i = 0; i < 256; i++) {
-		aes128_enc(lambda_set[i], key, 1, false);
+		aes128_enc(lambda_set[i], key, 4, false);
 	}
 	printf("[");
 	for (uint16_t j = 0; j < 255; j++) {
 		printf("%u ", lambda_set[j][0]);
 	}
 	printf("]\n");
-
+/*
 	// Xor the 256 sets in the fisrt set
 	for (uint16_t i = 1; i < 256; i++) {
 		for (uint16_t j = 0; j < 16; j++) {
 			lambda_set[0][j] ^= lambda_set[i][j];
 		}
 	}
-
+*/
 	// print the firt set who have to be full of 0
 	printf("[");
 	for (uint16_t j = 0; j < 16; j++) {
