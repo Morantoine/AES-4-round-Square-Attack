@@ -1,6 +1,8 @@
 /// Exercice 2: AES 3,5 rounds attack.
 /// Inspired by https://www.davidwong.fr/blockbreakers/square_2_attack4rounds.html
+
 use crate::aes128_enc::{aes128_enc, prev_aes128_round_key, SINV};
+use array_tool::vec::{Union, Intersect};
 use rand::prelude::*;
 
 /// Reverse the last 1/2 round with a guess at a position pos
@@ -24,11 +26,7 @@ fn check_key_guess(key_guess: u8, set_of_reversed_bytes: [u8; 256]) -> bool {
         xored_all_rev_bytes ^= rev_byte;
     }
     //dbg!(xored_all_rev_bytes);
-    if xored_all_rev_bytes == 0 {
-        true
-    } else {
-        false
-    }
+    xored_all_rev_bytes == 0
 }
 
 fn generate_lamda_set(key : [u8; 16]) -> [[u8; 16]; 256] {
@@ -50,23 +48,30 @@ fn generate_lamda_set(key : [u8; 16]) -> [[u8; 16]; 256] {
 
 /// Square attack
 pub fn attack(key : [u8; 16]) -> bool {
-    let mut cracked_key = false;
-    while !cracked_key {
-        // Generate a random lambda-set and encrypt it 
-        let lambda_set = generate_lamda_set(key);
-        // Loop through all the key
-        for key_index in 0..16 {
-            // Try all values for the guess
-            for guess in 0..255 {
-                let set_of_reversed_bytes = reverse_state(guess, key_index, &lambda_set);
-                if check_key_guess(guess, set_of_reversed_bytes) {
+    let mut cracked_key: Vec<Vec<u8>> = Vec::new();
+    for _ in 0..16 {
+        cracked_key.push(Vec::new())
+    }
+    while !cracked_key.iter().all(|v| v.len() == 1) {
+        for index_key in 0..16 {
+            let mut new_cracked_key: Vec<u8> = vec!();
+            print!("\nKey[{}] = ", index_key);
+            for n in 0..255 {
+                let set_of_reversed_bytes = reverse_state(n, index_key, &generate_lamda_set(key));
 
+                if check_key_guess(n, set_of_reversed_bytes) {
+                    print!("{}  ", n);
+                    new_cracked_key.push(n);
                 }
-                else {
-
+                if cracked_key[index_key].is_empty() {
+                    cracked_key[index_key].append(&mut new_cracked_key);
+                } else {
+                    cracked_key[index_key].intersect(new_cracked_key.clone());
                 }
             }
         }
     }
+    dbg!(cracked_key);
+    // TODO: faire les prevs
     true
 }
