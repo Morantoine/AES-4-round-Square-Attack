@@ -94,3 +94,8 @@ Résultat :
 
 #### Q.1.
 
+Aller dans le dossier `attack`, on a tout refait en Rust car c'est plus rigolo. Lancer : `cargo run --release`
+
+#### Q.2.
+
+Oui mais pas tout le temps.

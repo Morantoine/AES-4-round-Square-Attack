@@ -52,29 +52,30 @@ pub fn attack(key : [u8; 16]) -> bool {
         cracked_key.push(Vec::new())
     }
     let mut nb_rounds = 0;
+    let mut first_loop = true;
     while !cracked_key.iter().all(|v| v.len() == 1) {
         nb_rounds +=1;
         for index_key in 0..16 {
-            // print!("\nKey[{}] = ", index_key);
-            let mut new_cracked_key: Vec<u8> = vec!();
-            for n in 0..255 {
-                let set_of_reversed_bytes = reverse_state(n, index_key, &generate_lamda_set(key));
+            if cracked_key[index_key].len() != 1 { // check only false positive
+                let mut new_cracked_key: Vec<u8> = vec!();
+                for n in 0..255 {
+                    let set_of_reversed_bytes = reverse_state(n, index_key, &generate_lamda_set(key));
 
-                if check_key_guess(set_of_reversed_bytes) {
-                    // print!("{}  ", n);
-                    new_cracked_key.push(n);
+                    if check_key_guess(set_of_reversed_bytes) {
+                        if  first_loop {
+                            cracked_key[index_key].push(n);
+                        } else {
+                            new_cracked_key.push(n);
+                        }
+                    }
+                }
+                if !first_loop {
+                    cracked_key[index_key] = cracked_key[index_key].intersect(new_cracked_key.clone());
                 }
             }
-            if cracked_key[index_key].is_empty() {
-                cracked_key[index_key].append(&mut new_cracked_key);
-            } else {
-                // dbg!(&new_cracked_key);
-                // dbg!(&cracked_key[index_key]);
-                cracked_key[index_key] = cracked_key[index_key].intersect(new_cracked_key.clone());
-            }
         }
+        first_loop = false;
     }
-    // println!("\n\n{:#?}", cracked_key);
 
     let mut prev_key: [u8; 16] = [0; 16];
     let mut vec_cracked_key = cracked_key.into_iter().flatten().collect::<Vec<u8>>();
