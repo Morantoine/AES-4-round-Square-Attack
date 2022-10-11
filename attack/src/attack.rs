@@ -51,7 +51,9 @@ pub fn attack(key : [u8; 16]) -> bool {
     for _ in 0..16 {
         cracked_key.push(Vec::new())
     }
+    let mut nb_rounds = 0;
     while !cracked_key.iter().all(|v| v.len() == 1) {
+        nb_rounds +=1;
         for index_key in 0..16 {
             // print!("\nKey[{}] = ", index_key);
             let mut new_cracked_key: Vec<u8> = vec!();
@@ -80,6 +82,6 @@ pub fn attack(key : [u8; 16]) -> bool {
     prev_aes128_round_key(&prev_key, &mut vec_cracked_key, 2);
     prev_aes128_round_key(&vec_cracked_key, &mut prev_key, 1);
     prev_aes128_round_key(&prev_key, &mut vec_cracked_key, 0);
-    dbg!(vec_cracked_key);
+    println!("Found key in {} rounds : {:#?}", nb_rounds, vec_cracked_key);
     true
 }
