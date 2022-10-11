@@ -115,6 +115,16 @@ fn next_aes128_round_key(prev_key: &[u8], next_key: &mut [u8], round: usize) {
     }
 }
 
+pub fn prev_aes128_round_key(next_key: &[u8], prev_key: &mut [u8], round: usize) {
+    for i in (4..16).rev() {
+        prev_key[i] = next_key[i] ^ next_key[i - 4];
+    }
+    prev_key[0] = next_key[0] ^ SBOX[prev_key[13] as usize] ^ RC[round];
+    prev_key[1] = next_key[1] ^ SBOX[prev_key[14] as usize];
+    prev_key[2] = next_key[2] ^ SBOX[prev_key[15] as usize];
+    prev_key[3] = next_key[3] ^ SBOX[prev_key[12] as usize];
+}
+
 /*
  * Encrypt @block with @key over @nrounds. If @lastfull is true, the last round includes MixColumn, otherwise it doesn't.
  * @nrounds <= 10
@@ -165,3 +175,4 @@ pub fn aes128_enc(
         aes_round(block, &mut prev_key, 16);
     }
 }
+
