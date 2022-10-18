@@ -1,3 +1,4 @@
+/// Moran Antoine && Gindrier Clément
 /// Exercice 2: AES 3,5 rounds attack.
 /// Inspired by https://www.davidwong.fr/blockbreakers/square_2_attack4rounds.html
 use crate::aes128_enc::{aes128_enc, prev_aes128_round_key, SINV};
@@ -58,7 +59,8 @@ pub fn attack(key: [u8; 16]) -> Vec<u8> {
             if cracked_key[index_key].len() != 1 {
                 // check only false positive
                 let mut new_cracked_key: Vec<u8> = vec![];
-                for n in 0..255 {
+                for n_u16 in 0..256 as u16 {
+                    let n: u8 = n_u16 as u8;
                     let set_of_reversed_bytes =
                         reverse_state(n, index_key, &generate_lamda_set(key));
 
