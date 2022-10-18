@@ -1,8 +1,7 @@
 /// Exercice 2: AES 3,5 rounds attack.
 /// Inspired by https://www.davidwong.fr/blockbreakers/square_2_attack4rounds.html
-
 use crate::aes128_enc::{aes128_enc, prev_aes128_round_key, SINV};
-use array_tool::vec::{Intersect};
+use array_tool::vec::Intersect;
 
 /// Reverse the last 1/2 round with a guess at a position pos
 /// Return the set of bytes reversed for all the 256 sets
@@ -28,7 +27,7 @@ fn check_key_guess(set_of_reversed_bytes: [u8; 256]) -> bool {
     xored_all_rev_bytes == 0
 }
 
-fn generate_lamda_set(key : [u8; 16]) -> [[u8; 16]; 256] {
+fn generate_lamda_set(key: [u8; 16]) -> [[u8; 16]; 256] {
     let x = rand::random::<u8>();
 
     // 256 lambda_sets of size 16
@@ -46,7 +45,7 @@ fn generate_lamda_set(key : [u8; 16]) -> [[u8; 16]; 256] {
 }
 
 /// Square attack
-pub fn attack(key : [u8; 16]) -> bool {
+pub fn attack(key: [u8; 16]) -> Vec<u8> {
     let mut cracked_key: Vec<Vec<u8>> = Vec::new();
     for _ in 0..16 {
         cracked_key.push(Vec::new())
@@ -54,15 +53,17 @@ pub fn attack(key : [u8; 16]) -> bool {
     let mut nb_rounds = 0;
     let mut first_loop = true;
     while !cracked_key.iter().all(|v| v.len() == 1) {
-        nb_rounds +=1;
+        nb_rounds += 1;
         for index_key in 0..16 {
-            if cracked_key[index_key].len() != 1 { // check only false positive
-                let mut new_cracked_key: Vec<u8> = vec!();
+            if cracked_key[index_key].len() != 1 {
+                // check only false positive
+                let mut new_cracked_key: Vec<u8> = vec![];
                 for n in 0..255 {
-                    let set_of_reversed_bytes = reverse_state(n, index_key, &generate_lamda_set(key));
+                    let set_of_reversed_bytes =
+                        reverse_state(n, index_key, &generate_lamda_set(key));
 
                     if check_key_guess(set_of_reversed_bytes) {
-                        if  first_loop {
+                        if first_loop {
                             cracked_key[index_key].push(n);
                         } else {
                             new_cracked_key.push(n);
@@ -70,19 +71,21 @@ pub fn attack(key : [u8; 16]) -> bool {
                     }
                 }
                 if !first_loop {
-                    cracked_key[index_key] = cracked_key[index_key].intersect(new_cracked_key.clone());
+                    cracked_key[index_key] =
+                        cracked_key[index_key].intersect(new_cracked_key.clone());
                 }
             }
         }
         first_loop = false;
     }
 
+    // Invert the key expansion to recover the original master key.
     let mut prev_key: [u8; 16] = [0; 16];
     let mut vec_cracked_key = cracked_key.into_iter().flatten().collect::<Vec<u8>>();
     prev_aes128_round_key(&vec_cracked_key, &mut prev_key, 3);
     prev_aes128_round_key(&prev_key, &mut vec_cracked_key, 2);
     prev_aes128_round_key(&vec_cracked_key, &mut prev_key, 1);
     prev_aes128_round_key(&prev_key, &mut vec_cracked_key, 0);
-    println!("Found key in {} rounds : {:#?}", nb_rounds, vec_cracked_key);
-    true
+    println!("Found key in {} rounds : {:?}", nb_rounds, vec_cracked_key);
+    vec_cracked_key
 }

@@ -8,7 +8,7 @@
 
 ##### Q.1
 
-`xtime` sert à multiplier par x un polynome de $F_{2⁸}$, c'est-à-dire de $(Z/2Z[X])/m$ avec m un polynome de degré 8 irréductible.
+`xtime` sert à multiplier par x un polynôme de $F_{2⁸}$, c'est-à-dire de $(Z/2Z[X])/m$ avec m un polynôme de degré 8 irréductible.
 
 `xtime` prend $m(x) = X⁸ + X⁴ + X³ + X + 1$
 
@@ -37,13 +37,13 @@ void prev_aes128_round_key(const uint8_t next_key[16], uint8_t prev_key[16], int
 
 On teste avec la clé : `000102030405060708090a0b0c0d0e0f`
 
-Ça marche bien.
+On fait la fonction `next` puis la fonction `prev`. On retombe bien sur notre clé.
 
 #### Q.3
 
 - Si l'on prend $k_1 = k_2$, alors  $F(k_1 || k_2, x) = \Epsilon(k_1, x) \oplus \Epsilon(k_2, x) = \Epsilon(k_1, x) \oplus \Epsilon(k_1, x) = 0 $.
 
-- Soit $\lambda$ un $\Lambda$-set, qui vérifie donc le distinguiser pour l'AES. Soient $k1$ et $k2$  deux clefs de 256 bits chacune. On a :
+- Soit $\lambda$ un $\Lambda$-set, qui vérifie donc le distinguisher pour l'AES. Soient $k1$ et $k2$  deux clefs de 256 bits chacune. On a :
   
   $\oplus_{x \in \lambda} F(k1 || k2, x) = \oplus_{x \in \lambda} (AES^3(k1, x) \oplus AES^3(k2, x)) = \oplus_{x \in \lambda} AES^3(k1, x) + \oplus_{x \in \lambda} AES^3(k2, x) = 0 \oplus 0 = 0$.
   
@@ -91,7 +91,15 @@ Résultat :
 
 #### Q.1.
 
-Aller dans le dossier `attack`, on a tout refait en Rust car c'est plus rigolo. Lancer :`cargo run --release` (ou pour que l'assembleur soit encore plus optimisé : `RUSTFLAGS="-C target-cpu=native" cargo run --release`)
+Aller dans le dossier `attack`, on a tout refait en Rust car c'est plus rigolo. Lancer :`cargo run --release` pour lancer l'attaque sur des clés aléatoires (ou pour que l'assembleur soit encore plus optimisé : `RUSTFLAGS="-C target-cpu=native" cargo run --release`).
+
+Les fonctions d'attaque se trouve dans `attack/src/attack.rs`.
+
+La clé est créée dans le main, et elle est donnée à `attack::attack` pour qu'il puisse créer autant de chiffrés qu'il le veut. (Pour les faux positifs).
+
+Dans le main, on appelle aussi la fonction `test` qui vient tester autant de clés aléatoires qu'on le veut pour vérifier que tout marche bien.
+
+
 
 ### Q.2.
 
