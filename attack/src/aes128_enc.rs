@@ -175,4 +175,3 @@ pub fn aes128_enc(
         aes_round(block, &mut prev_key, 16);
     }
 }
-
