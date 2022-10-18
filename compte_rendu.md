@@ -103,7 +103,7 @@ Dans le main, on appelle aussi la fonction `test` qui vient tester autant de cl�
 
 ### Q.2.
 
-- On peut créer une nouvelle SBOX en cŕeant simplement une permutation aléatoire de 256 éléments :
+- On peut créer une nouvelle SBOX en créant simplement une permutation aléatoire de 256 éléments :
 
 ```python
 S = [hex(i) for i in range(256)]
@@ -113,4 +113,4 @@ SINV = [S.index(hex(i)) for i in range(256)]
 
     Une fois ces nouvelles SBOX implémentées en Rust, nous voyons que tout marche     aussi bien qu'avant.
 
-- De même, on peut utliser le polynôme $X^8 + X^7 + X^5 + X^4 + 1$, qui est irréductible sur $F_2[X]$, ce qui multiplie par $X$ de la même façon.
+- De même, on peut utiliser le polynôme $X^8 + X^7 + X^5 + X^4 + 1$, qui est irréductible sur $F_2[X]$, ce qui multiplie par $X$ de la même façon.
