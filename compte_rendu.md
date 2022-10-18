@@ -46,9 +46,9 @@ On teste avec la clé : `000102030405060708090a0b0c0d0e0f`
 - Soit $\lambda$ un $\Lambda$-set, qui vérifie donc le distinguiser pour l'AES. Soient $k1$ et $k2$  deux clefs de 256 bits chacune. On a :
   
   $\oplus_{x \in \lambda} F(k1 || k2, x) = \oplus_{x \in \lambda} (AES^3(k1, x) \oplus AES^3(k2, x)) = \oplus_{x \in \lambda} AES^3(k1, x) + \oplus_{x \in \lambda} AES^3(k2, x) = 0 \oplus 0 = 0$.
-
+  
   Le distinguisher est donc également valable pour F. 
-
+  
   Le programme de test pour le vérifier
 
 ```c
@@ -93,8 +93,6 @@ Résultat :
 
 Je sais pas quoi mettre mdr.
 
-
-
 ### Q.2.
 
 - On peut créer une nouvelle SBOX en cŕeant simplement une permutation aléatoire de 256 éléments :
@@ -107,6 +105,4 @@ SINV = [S.index(hex(i)) for i in range(256)]
 
     Une fois ces nouvelles SBOX implémentées en Rust, nous voyons que tout marche     aussi bien qu'avant.
 
-
-
-### 
+- De même, on peut utliser le polynôme $X^8 + X^7 + X^5 + X^4 + 1$, qui est irréductible sur $F_2[X]$, ce qui multiplie par $X$ de la même façon.

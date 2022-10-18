@@ -82,11 +82,22 @@ pub const SINV: [u8; 256] = [
     0x2a, 0x69, 0x8b, 0x62, 0x7d, 0xf7, 0x20, 0xd6, 0x9f, 0xe1, 0xa4, 0x9, 0xa7, 0x46, 0xb0, 0x7e
 ];
 
+/*
 fn xtime(p: u8) -> u8 {
     let mut m: u8 = p >> 7;
     m ^= 1;
     m = m.overflowing_sub(1).0;
     m &= 0x1B; // x^4 + x^3 + x + 1
+    return (p << 1) ^ m;
+}
+*/
+
+fn xtime(p: u8) -> u8 {
+    let mut m: u8 = p >> 7;
+    m ^= 1;
+    m = m.overflowing_sub(1).0;
+    // m &= 0x1B; // x^4 + x^3 + x + 1
+    m &= 0xB1; // x^7 + x^5 + x^4 + 1
     return (p << 1) ^ m;
 }
 
