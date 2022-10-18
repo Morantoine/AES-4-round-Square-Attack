@@ -93,6 +93,16 @@ Résultat :
 
 Aller dans le dossier `attack`, on a tout refait en Rust car c'est plus rigolo. Lancer :`cargo run --release` (ou pour que l'assembleur soit encore plus optimisé : `RUSTFLAGS="-C target-cpu=native" cargo run --release`)
 
-#### Q.2.
+### Q.2.
 
-Oui mais pas tout le temps.
+- On peut créer une nouvelle SBOX en cŕeant simplement une permutation aléatoire de 256 éléments :
+
+```python
+S = [hex(i) for i in range(256)]
+random.shuffle(S)
+SINV = [S.index(hex(i)) for i in range(256)]
+```
+
+    Une fois ces nouvelles SBOX implémentées en Rust, nous voyons que tout marche     aussi bien qu'avant.
+
+- De même, on peut utliser le polynôme $X^8 + X^7 + X^5 + X^4 + 1$, qui est irréductible sur $F_2[X]$, ce qui multiplie par $X$ de la même façon.
