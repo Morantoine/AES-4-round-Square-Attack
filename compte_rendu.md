@@ -99,8 +99,6 @@ La clé est créée dans le main, et elle est donnée à `attack::attack` pour q
 
 Dans le main, on appelle aussi la fonction `test` qui vient tester autant de clés aléatoires qu'on le veut pour vérifier que tout marche bien.
 
-
-
 ### Q.2.
 
 - On peut créer une nouvelle SBOX en créant simplement une permutation aléatoire de 256 éléments :
@@ -114,3 +112,5 @@ SINV = [S.index(hex(i)) for i in range(256)]
     Une fois ces nouvelles SBOX implémentées en Rust, nous voyons que tout marche     aussi bien qu'avant.
 
 - De même, on peut utiliser le polynôme $X^8 + X^7 + X^5 + X^4 + 1$, qui est irréductible sur $F_2[X]$, ce qui multiplie par $X$ de la même façon.
+
+(PS : l'implémentata)

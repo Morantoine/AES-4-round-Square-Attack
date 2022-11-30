@@ -12,7 +12,7 @@ fn test(nb_test: u32) {
         //println!("{:?}", key);
         assert!(attack::attack(key) == key);
     }
-    println!("{} tests réussis :D", nb_test);
+    println!("{} tests succeeded :D", nb_test);
 }
 
 fn main() {
